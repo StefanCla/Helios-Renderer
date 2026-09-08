@@ -1,0 +1,18 @@
+{
+  "OutputFoldersPerTargetSystem": {
+    "Local Machine": [
+      "out\\build\\x64-Debug",
+      "out\\install\\x64-Debug"
+    ]
+  },
+  "ExpandedNodes": [
+    "",
+    "\\inc",
+    "\\out\\build",
+    "\\resource",
+    "\\resource\\shaders",
+    "\\src"
+  ],
+  "SelectedNode": "\\resource\\shaders\\pixelshader.hlsl",
+  "PreviewInSolutionExplorer": false
+}
