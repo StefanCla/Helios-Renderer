@@ -18,8 +18,6 @@ find_package(directx-headers CONFIG REQUIRED)
 find_package(directxmath CONFIG REQUIRED)
 find_package(directxtex CONFIG REQUIRED)
 
-#include_directories(ext/directx)
-
 add_executable(HeliosRenderer WIN32)
 
 target_link_libraries(HeliosRenderer PUBLIC
