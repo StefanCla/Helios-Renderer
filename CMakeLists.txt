@@ -8,19 +8,34 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 #set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin) # Output directory for shared lib (.DLL)
 #set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin) # Output directory for executables (.EXE)
 
+# Use vcpkg dir
+set(CMAKE_TOOLCHAIN_FILE "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
+
 project(Helios-Renderer LANGUAGES CXX)
 
-include_directories(ext/directx)
+find_package(directx-dxc CONFIG REQUIRED)
+find_package(directx-headers CONFIG REQUIRED)
+find_package(directxmath CONFIG REQUIRED)
+find_package(directxtex CONFIG REQUIRED)
 
-# Libraries to use
-link_libraries(
+#include_directories(ext/directx)
+
+add_executable(HeliosRenderer WIN32)
+
+target_link_libraries(HeliosRenderer PUBLIC
     D3D12.lib
     dxgi.lib
     dxguid.lib
     d3dcompiler.lib
 )
 
-add_executable(HeliosRenderer WIN32)
+target_link_libraries(HeliosRenderer PUBLIC
+    Microsoft::DirectXShaderCompiler 
+    Microsoft::DirectX-Headers
+    Microsoft::DirectX-Guids
+    Microsoft::DirectXTex 
+    Microsoft::DirectXMath 
+)
 
 # All src files to use
 target_sources(HeliosRenderer
