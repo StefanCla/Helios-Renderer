@@ -49,11 +49,11 @@ private:
 	HANDLE m_FenceEvent;
 	uint64_t m_FenceValue = 0;
 
-	Microsoft::WRL::ComPtr<ID3D12CommandAllocator> m_CommandAllocators[3];
+	Microsoft::WRL::ComPtr<ID3D12CommandAllocator> m_CommandAllocators[g_BufferCount];
 	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_CommandList = nullptr;
 
 	Microsoft::WRL::ComPtr<ID3D12Device2> m_Device = nullptr;
 
 	UINT m_CurrentBackBufferIndex = 0;
-	uint64_t m_FrameFenceValues[3] = {};
+	uint64_t m_FrameFenceValues[g_BufferCount] = {};
 };

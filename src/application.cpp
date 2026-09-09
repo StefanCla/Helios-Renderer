@@ -1,5 +1,4 @@
 #include "application.hpp"
-#include "helperfunc.hpp"
 #include "commandqueue.hpp"
 #include "window.hpp"
 

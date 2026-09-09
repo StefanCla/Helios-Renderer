@@ -1,5 +1,4 @@
 #include "window.hpp"
-#include "helperfunc.hpp"
 #include "directx/d3dx12.h"
 
 using namespace Microsoft::WRL;
@@ -8,7 +7,7 @@ Window::Window(HINSTANCE hInst, const wchar_t* windowClassName)
 {
     //RegisterWindowClass(hInst, windowClassName);
 
-    CreateWindow(windowClassName, hInst, L"Learning DirectX 12", m_ClientWidth, m_ClientHeight);
+    CreateWindow(windowClassName, hInst, L"Learning DirectX 12", g_ClientWidth, g_ClientHeight);
 }
 
 Window::~Window()
@@ -112,13 +111,13 @@ void Window::CreateSwapChain(ComPtr<ID3D12CommandQueue> commandQueue, bool bTear
     ThrowIfFailed(CreateDXGIFactory2(createFactoryFlags, IID_PPV_ARGS(&dxgiFactory4)));
 
     DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
-    swapChainDesc.Width = m_ClientWidth;
-    swapChainDesc.Height = m_ClientHeight;
+    swapChainDesc.Width = g_ClientWidth;
+    swapChainDesc.Height = g_ClientHeight;
     swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
     swapChainDesc.Stereo = FALSE;
     swapChainDesc.SampleDesc = { 1, 0 };
     swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-    swapChainDesc.BufferCount = m_BufferCount;
+    swapChainDesc.BufferCount = g_BufferCount;
     swapChainDesc.Scaling = DXGI_SCALING_STRETCH;
     swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
     swapChainDesc.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED;
@@ -144,7 +143,7 @@ void Window::CreateSwapChain(ComPtr<ID3D12CommandQueue> commandQueue, bool bTear
 void Window::CreateDescriptorHeap(ComPtr<ID3D12Device2> device, D3D12_DESCRIPTOR_HEAP_TYPE type)
 {
     D3D12_DESCRIPTOR_HEAP_DESC desc = {};
-    desc.NumDescriptors = m_BufferCount;
+    desc.NumDescriptors = g_BufferCount;
     desc.Type = type;
 
     ThrowIfFailed(device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&m_DescriptorHeap)));

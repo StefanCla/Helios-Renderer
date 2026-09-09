@@ -41,7 +41,6 @@ target_sources(HeliosRenderer
         src/main.cpp
         src/application.cpp
         src/window.cpp
-        src/helperfunc.cpp
         src/commandqueue.cpp
         
     PUBLIC
@@ -52,7 +51,6 @@ target_sources(HeliosRenderer
         FILES
             inc/application.hpp
             inc/window.hpp
-            inc/helperfunc.hpp
             inc/commandqueue.hpp
 )
 
@@ -66,6 +64,8 @@ target_precompile_headers(HeliosRenderer
         <cassert>
         <chrono>
         <memory>
+
+        inc/globalhelper.hpp
 )
 
 target_compile_definitions(HeliosRenderer

@@ -46,8 +46,6 @@ private:
 	~Application();
 
 private:
-	const uint32_t m_BufferCount = 3;
-
 	Microsoft::WRL::ComPtr<ID3D12Debug> m_DebugInterface = nullptr;
 	Microsoft::WRL::ComPtr<IDXGIAdapter4> m_Adapter = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12Device2> m_Device = nullptr;

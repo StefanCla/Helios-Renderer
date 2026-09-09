@@ -40,7 +40,7 @@ public:
 
 	Microsoft::WRL::ComPtr<IDXGISwapChain4> m_SwapChain = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_DescriptorHeap = nullptr;
-	Microsoft::WRL::ComPtr<ID3D12Resource> m_Resource[3];
+	Microsoft::WRL::ComPtr<ID3D12Resource> m_Resource[g_BufferCount];
 
 	UINT m_DescriptorSize;
 
@@ -48,11 +48,6 @@ protected:
 	friend LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 private:
-	const uint32_t m_BufferCount = 3;
-
-
-	uint32_t m_ClientWidth = 1280;
-	uint32_t m_ClientHeight = 720;
 
 	HWND m_HWnd;
 	RECT m_WindowRect;

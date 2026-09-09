@@ -1,5 +1,4 @@
 #include "commandqueue.hpp"
-#include "helperfunc.hpp"
 #include "window.hpp"
 
 using namespace Microsoft::WRL;
@@ -9,7 +8,7 @@ CommandQueue::CommandQueue(ComPtr<ID3D12Device2> device)
 {
 	CreateCommandQueue(D3D12_COMMAND_LIST_TYPE_DIRECT);
 
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < g_BufferCount; i++)
     {
         m_CommandAllocators[i] = CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT);
     }
