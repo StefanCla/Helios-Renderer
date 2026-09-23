@@ -7,7 +7,7 @@
 #include <directx/d3dx12.h>
 
 // Responsible for initializing the renderer.
-// Should find the GPU, create the device and set up the everything.
+// Should find the GPU, create the device and set up everything.
 
 // We can only have 1 Application active, as such, this will be a singleton.
 
@@ -35,8 +35,12 @@ public:
 
 	void Application::RegisterWindowClass(HINSTANCE hInst, const wchar_t* windowClassName);
 
+	const bool GetTearingSupport() const;
+
 	std::shared_ptr<CommandQueue> m_CommandQueue;
 	std::shared_ptr<Window> m_Window;
+
+	Microsoft::WRL::ComPtr<ID3D12Device2> m_Device = nullptr;
 
 private:
 	Application(HINSTANCE hInst);
@@ -48,7 +52,7 @@ private:
 private:
 	Microsoft::WRL::ComPtr<ID3D12Debug> m_DebugInterface = nullptr;
 	Microsoft::WRL::ComPtr<IDXGIAdapter4> m_Adapter = nullptr;
-	Microsoft::WRL::ComPtr<ID3D12Device2> m_Device = nullptr;
+	//Microsoft::WRL::ComPtr<ID3D12Device2> m_Device = nullptr;
 
 	bool m_bTearingSupported = false;
 

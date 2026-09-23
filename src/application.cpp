@@ -205,7 +205,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
         {
         case WM_PAINT:
             gs_pApplication->m_Window->Update();
-            gs_pApplication->m_CommandQueue->Render(gs_pApplication->m_Window);
+            gs_pApplication->m_CommandQueue->Render(gs_pApplication->m_Window, gs_pApplication->GetTearingSupport());
             break;
         case WM_SYSKEYDOWN:
         case WM_KEYDOWN:
@@ -214,19 +214,19 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 
             switch (wParam)
             {
-                //case 'V':
-                //    g_VSync = !g_VSync;
-                //    break;
+                case 'V':
+                    gs_pApplication->m_Window->ToggleVSync();
+                    break;
             case VK_ESCAPE:
                 ::PostQuitMessage(0);
                 break;
-                //case VK_RETURN:
-                //    if (alt)
-                //    {
-                //case VK_F11:
-                //    SetFullscreen(!g_Fullscreen);
-                //    }
-                //    break;
+                case VK_RETURN:
+                    if (alt)
+                    {
+                case VK_F11:
+                    gs_pApplication->m_Window->ToggleFullScreen();
+                    }
+                break;
             }
         }
         break;
@@ -237,13 +237,16 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
             break;
         case WM_SIZE:
         {
-            //RECT clientRect = {};
-            //::GetClientRect(g_hWnd, &clientRect);
+            if (gs_pApplication != nullptr)
+            {
+                RECT clientRect = {};
+                ::GetClientRect(gs_pApplication->m_Window->m_HWnd, &clientRect);
 
-            //int width = clientRect.right - clientRect.left;
-            //int height = clientRect.bottom - clientRect.top;
+                int width = clientRect.right - clientRect.left;
+                int height = clientRect.bottom - clientRect.top;
 
-            //Resize(width, height);
+                gs_pApplication->m_Window->Resize(width, height, gs_pApplication->m_CommandQueue, gs_pApplication->m_Device);
+            }
         }
         break;
         case WM_DESTROY:
@@ -259,4 +262,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     }
 
     return 0;
+}
+
+const bool Application::GetTearingSupport() const
+{
+    return m_bTearingSupported;
 }

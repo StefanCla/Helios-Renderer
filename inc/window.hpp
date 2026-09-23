@@ -12,6 +12,8 @@
 #undef CreateWindow
 #endif
 
+class CommandQueue;
+
 class Window
 {
 public:
@@ -26,6 +28,10 @@ public:
 
 	// Set the window to fullscreen or windowed
 	void SetFullScreen(bool bFullscreen);
+	void ToggleFullScreen();
+
+	void ToggleVSync();
+	const bool GetVSync() const;
 
 	// Create Swap Chain using the command queue
 	void CreateSwapChain(Microsoft::WRL::ComPtr<ID3D12CommandQueue> commandQueue, bool bTearingSupported);
@@ -37,6 +43,9 @@ public:
 
 	void Update();
 	void ShowWindow();
+
+	// Resize the window properly
+	void Resize(uint32_t width, uint32_t height, std::shared_ptr<CommandQueue> commandQueue, Microsoft::WRL::ComPtr<ID3D12Device2> device);
 
 	Microsoft::WRL::ComPtr<IDXGISwapChain4> m_SwapChain = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_DescriptorHeap = nullptr;
@@ -54,5 +63,4 @@ private:
 
 	bool m_bVSync = true;
 	bool m_bFullscreen = false;
-
 };

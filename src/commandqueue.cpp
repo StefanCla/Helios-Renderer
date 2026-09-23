@@ -86,7 +86,7 @@ void CommandQueue::CreateCommandList(ComPtr<ID3D12CommandAllocator> commandAlloc
 	ThrowIfFailed(m_CommandList->Close());
 }
 
-void CommandQueue::Render(std::shared_ptr<Window> window)
+void CommandQueue::Render(std::shared_ptr<Window> window, bool bTearingSupported)
 {
     auto commandAllocator = m_CommandAllocators[m_CurrentBackBufferIndex];
     auto backBuffer = window->m_Resource[m_CurrentBackBufferIndex];
@@ -126,8 +126,8 @@ void CommandQueue::Render(std::shared_ptr<Window> window)
         Signal(m_CommandQueue, m_FenceValue);
         m_FrameFenceValues[m_CurrentBackBufferIndex] = m_FenceValue;
 
-        UINT syncInterval = false; // g_VSync ? 1 : 0;
-        UINT presentFlags = false; // g_TearingSupported && !g_VSync ? DXGI_PRESENT_ALLOW_TEARING : 0;
+        UINT syncInterval =  window->GetVSync() ? 1 : 0;
+        UINT presentFlags =  bTearingSupported && !window->GetVSync() ? DXGI_PRESENT_ALLOW_TEARING : 0;
         ThrowIfFailed(window->m_SwapChain->Present(syncInterval, presentFlags));
 
         m_CurrentBackBufferIndex = window->m_SwapChain->GetCurrentBackBufferIndex();

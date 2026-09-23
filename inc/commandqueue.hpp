@@ -40,9 +40,12 @@ public:
 	// Create Command List using device: The commands to be executed
 	void CreateCommandList(Microsoft::WRL::ComPtr<ID3D12CommandAllocator> commandAllocator, D3D12_COMMAND_LIST_TYPE type);
 
-	void Render(std::shared_ptr<Window> window);
+	void Render(std::shared_ptr<Window> window, bool bTearingSupported);
 
 	Microsoft::WRL::ComPtr<ID3D12CommandQueue> m_CommandQueue = nullptr;
+
+	UINT m_CurrentBackBufferIndex = 0;
+	uint64_t m_FrameFenceValues[g_BufferCount] = {};
 
 private:
 	Microsoft::WRL::ComPtr<ID3D12Fence> m_Fence = nullptr;
@@ -54,6 +57,4 @@ private:
 
 	Microsoft::WRL::ComPtr<ID3D12Device2> m_Device = nullptr;
 
-	UINT m_CurrentBackBufferIndex = 0;
-	uint64_t m_FrameFenceValues[g_BufferCount] = {};
 };

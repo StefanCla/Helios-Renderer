@@ -1,5 +1,6 @@
 #include "window.hpp"
 #include "directx/d3dx12.h"
+#include "commandqueue.hpp"
 
 using namespace Microsoft::WRL;
 
@@ -7,6 +8,7 @@ Window::Window(HINSTANCE hInst, const wchar_t* windowClassName)
 {
     //RegisterWindowClass(hInst, windowClassName);
 
+    m_bVSync = false;
     CreateWindow(windowClassName, hInst, L"Learning DirectX 12", g_ClientWidth, g_ClientHeight);
 }
 
@@ -98,6 +100,11 @@ void Window::SetFullScreen(bool bFullscreen)
             ::ShowWindow(m_HWnd, SW_NORMAL);
         }
     }
+}
+
+void Window::ToggleFullScreen()
+{
+    SetFullScreen(!m_bFullscreen);
 }
 
 void Window::CreateSwapChain(ComPtr<ID3D12CommandQueue> commandQueue, bool bTearingSupported)
@@ -198,4 +205,45 @@ void Window::Update()
 void Window::ShowWindow()
 {
     ::ShowWindow(m_HWnd, SW_SHOW);
+}
+
+void Window::ToggleVSync()
+{
+    m_bVSync = !m_bVSync;
+}
+
+const bool Window::GetVSync() const
+{
+    return m_bVSync;
+}
+
+void Window::Resize(uint32_t width, uint32_t height, std::shared_ptr<CommandQueue> commandQueue, ComPtr<ID3D12Device2> device)
+{
+    if (g_ClientWidth != width || g_ClientHeight != height)
+    {
+        // Don't allow 0 size swap chain back buffers.
+        g_ClientWidth = std::max(1u, width);
+        g_ClientHeight = std::max(1u, height);
+
+        // Flush the GPU queue to make sure the swap chain's back buffers
+        // are not being referenced by an in-flight command list.
+        commandQueue->Flush(commandQueue->m_CommandQueue);
+
+        for (int i = 0; i < g_BufferCount; ++i)
+        {
+            // Any references to the back buffers must be released
+            // before the swap chain can be resized.
+            m_Resource[i].Reset();
+            commandQueue->m_FrameFenceValues[i] = commandQueue->m_FrameFenceValues[commandQueue->m_CurrentBackBufferIndex];
+        }
+
+        DXGI_SWAP_CHAIN_DESC swapChainDesc = {};
+        ThrowIfFailed(m_SwapChain->GetDesc(&swapChainDesc));
+        ThrowIfFailed(m_SwapChain->ResizeBuffers(g_BufferCount, g_ClientWidth, g_ClientHeight,
+            swapChainDesc.BufferDesc.Format, swapChainDesc.Flags));
+
+        commandQueue->m_CurrentBackBufferIndex = m_SwapChain->GetCurrentBackBufferIndex();
+        UpdateRenderTargetView(device);
+        //UpdateRenderTargetViews(g_Device, m_SwapChain, g_RTVDescriptorHeap);
+    }
 }
