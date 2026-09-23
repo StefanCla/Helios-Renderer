@@ -4,29 +4,28 @@
 
 using namespace Microsoft::WRL;
 
-static bool g_IsInitialized = false;
-static Application* gs_pApplication = nullptr;
+static bool g_bIsInitialized = false;
+static Application* g_Application = nullptr;
 
 static LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 void Application::Create(HINSTANCE hInst)
 {
-    if (!gs_pApplication)
+    if (!g_Application)
     {
-        gs_pApplication = new Application(hInst);
+        g_Application = new Application(hInst);
     }
 }
 
 Application& Application::Get()
 {
-	assert(gs_pApplication);
-	return *gs_pApplication;
+	assert(g_Application);
+	return *g_Application;
 }
 
 Application::Application(HINSTANCE hInst)
     : m_HInstance(hInst)
 {
-	// Initialize here
     RegisterWindowClass(hInst, L"DX12WindowClass");
 
     EnableDebugLayer();
@@ -40,18 +39,16 @@ Application::Application(HINSTANCE hInst)
 
     m_CommandQueue = std::make_shared<CommandQueue>(m_Device);
 
-    m_Window->CreateSwapChain(m_CommandQueue->m_CommandQueue, m_bTearingSupported);
+    m_Window->CreateSwapChain(m_CommandQueue->GetDX12CommandQueue(), m_bTearingSupported);
     m_Window->CreateDescriptorHeap(m_Device, D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
     m_Window->UpdateRenderTargetView(m_Device);
 
-    g_IsInitialized = true;
+    g_bIsInitialized = true;
     m_Window->ShowWindow();
 }
 
 Application::~Application()
-{
-	// De-initialize here
-}
+{}
 
 void Application::RegisterWindowClass(HINSTANCE hInst, const wchar_t* windowClassName)
 {
@@ -199,13 +196,13 @@ void Application::CheckTearingSupport()
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    if (g_IsInitialized)
+    if (g_bIsInitialized)
     {
         switch (message)
         {
         case WM_PAINT:
-            gs_pApplication->m_Window->Update();
-            gs_pApplication->m_CommandQueue->Render(gs_pApplication->m_Window, gs_pApplication->GetTearingSupport());
+            g_Application->m_Window->Update();
+            g_Application->m_CommandQueue->Render(g_Application->m_Window, g_Application->GetTearingSupport());
             break;
         case WM_SYSKEYDOWN:
         case WM_KEYDOWN:
@@ -214,9 +211,15 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 
             switch (wParam)
             {
-                case 'V':
-                    gs_pApplication->m_Window->ToggleVSync();
-                    break;
+            case 'V':
+                g_Application->m_Window->ToggleVSync();
+                break;
+            //case 'S':
+            //    g_Application->m_Window->ShowWindow();
+            //    break;
+            //case 'H':
+            //    g_Application->m_Window->HideWindow();
+            //    break;
             case VK_ESCAPE:
                 ::PostQuitMessage(0);
                 break;
@@ -224,7 +227,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
                     if (alt)
                     {
                 case VK_F11:
-                    gs_pApplication->m_Window->ToggleFullScreen();
+                    g_Application->m_Window->ToggleFullScreen();
                     }
                 break;
             }
@@ -237,15 +240,15 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
             break;
         case WM_SIZE:
         {
-            if (gs_pApplication != nullptr)
+            if (g_Application != nullptr)
             {
                 RECT clientRect = {};
-                ::GetClientRect(gs_pApplication->m_Window->m_HWnd, &clientRect);
+                ::GetClientRect(g_Application->m_Window->m_HWnd, &clientRect);
 
                 int width = clientRect.right - clientRect.left;
                 int height = clientRect.bottom - clientRect.top;
 
-                gs_pApplication->m_Window->Resize(width, height, gs_pApplication->m_CommandQueue, gs_pApplication->m_Device);
+                g_Application->m_Window->Resize(width, height, g_Application->m_CommandQueue);
             }
         }
         break;

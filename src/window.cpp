@@ -1,21 +1,18 @@
 #include "window.hpp"
 #include "directx/d3dx12.h"
 #include "commandqueue.hpp"
+#include "application.hpp"
 
 using namespace Microsoft::WRL;
 
 Window::Window(HINSTANCE hInst, const wchar_t* windowClassName)
 {
-    //RegisterWindowClass(hInst, windowClassName);
-
     m_bVSync = false;
     CreateWindow(windowClassName, hInst, L"Learning DirectX 12", g_ClientWidth, g_ClientHeight);
 }
 
 Window::~Window()
-{
-	// De-initialize here
-}
+{}
 
 void Window::CreateWindow(const wchar_t* windowClassName, HINSTANCE hInst, const wchar_t* windowTitle, uint32_t width, uint32_t height)
 {
@@ -207,6 +204,11 @@ void Window::ShowWindow()
     ::ShowWindow(m_HWnd, SW_SHOW);
 }
 
+void Window::HideWindow()
+{
+    ::ShowWindow(m_HWnd, SW_HIDE);
+}
+
 void Window::ToggleVSync()
 {
     m_bVSync = !m_bVSync;
@@ -217,7 +219,7 @@ const bool Window::GetVSync() const
     return m_bVSync;
 }
 
-void Window::Resize(uint32_t width, uint32_t height, std::shared_ptr<CommandQueue> commandQueue, ComPtr<ID3D12Device2> device)
+void Window::Resize(uint32_t width, uint32_t height, std::shared_ptr<CommandQueue> commandQueue)
 {
     if (g_ClientWidth != width || g_ClientHeight != height)
     {
@@ -227,7 +229,7 @@ void Window::Resize(uint32_t width, uint32_t height, std::shared_ptr<CommandQueu
 
         // Flush the GPU queue to make sure the swap chain's back buffers
         // are not being referenced by an in-flight command list.
-        commandQueue->Flush(commandQueue->m_CommandQueue);
+        commandQueue->Flush(commandQueue->GetDX12CommandQueue());
 
         for (int i = 0; i < g_BufferCount; ++i)
         {
@@ -243,7 +245,12 @@ void Window::Resize(uint32_t width, uint32_t height, std::shared_ptr<CommandQueu
             swapChainDesc.BufferDesc.Format, swapChainDesc.Flags));
 
         commandQueue->m_CurrentBackBufferIndex = m_SwapChain->GetCurrentBackBufferIndex();
-        UpdateRenderTargetView(device);
-        //UpdateRenderTargetViews(g_Device, m_SwapChain, g_RTVDescriptorHeap);
+        Application& application = Application::Get();
+        UpdateRenderTargetView(application.GetDevice());
     }
+}
+
+const ComPtr<ID3D12Resource> Window::GetResource(const uint32_t backBufferIndex) const
+{
+    return m_Resource[backBufferIndex];
 }

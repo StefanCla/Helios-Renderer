@@ -17,14 +17,10 @@ CommandQueue::CommandQueue(ComPtr<ID3D12Device2> device)
 
     CreateEventHandle();
 	CreateFence();
-
-	// Initialize here
 }
 
 CommandQueue::~CommandQueue()
-{
-	// De-initialize here
-}
+{}
 
 void CommandQueue::CreateFence()
 {
@@ -89,7 +85,7 @@ void CommandQueue::CreateCommandList(ComPtr<ID3D12CommandAllocator> commandAlloc
 void CommandQueue::Render(std::shared_ptr<Window> window, bool bTearingSupported)
 {
     auto commandAllocator = m_CommandAllocators[m_CurrentBackBufferIndex];
-    auto backBuffer = window->m_Resource[m_CurrentBackBufferIndex];
+    auto backBuffer = window->GetResource(m_CurrentBackBufferIndex);
 
     commandAllocator->Reset();
     m_CommandList->Reset(commandAllocator.Get(), nullptr);
@@ -103,7 +99,7 @@ void CommandQueue::Render(std::shared_ptr<Window> window, bool bTearingSupported
         m_CommandList->ResourceBarrier(1, &barrier);
 
         FLOAT clearColor[] = { 0.4f, 0.6f, 0.9f, 1.0f };
-        CD3DX12_CPU_DESCRIPTOR_HANDLE rtv(window->m_DescriptorHeap->GetCPUDescriptorHandleForHeapStart(),
+        CD3DX12_CPU_DESCRIPTOR_HANDLE rtv(window->GetDescriptorHeap()->GetCPUDescriptorHandleForHeapStart(),
             m_CurrentBackBufferIndex, window->m_DescriptorSize);
 
         m_CommandList->ClearRenderTargetView(rtv, clearColor, 0, nullptr);
@@ -128,9 +124,9 @@ void CommandQueue::Render(std::shared_ptr<Window> window, bool bTearingSupported
 
         UINT syncInterval =  window->GetVSync() ? 1 : 0;
         UINT presentFlags =  bTearingSupported && !window->GetVSync() ? DXGI_PRESENT_ALLOW_TEARING : 0;
-        ThrowIfFailed(window->m_SwapChain->Present(syncInterval, presentFlags));
+        ThrowIfFailed(window->GetSwapChain()->Present(syncInterval, presentFlags));
 
-        m_CurrentBackBufferIndex = window->m_SwapChain->GetCurrentBackBufferIndex();
+        m_CurrentBackBufferIndex = window->GetSwapChain()->GetCurrentBackBufferIndex();
 
         WaitForFenceValue(m_FrameFenceValues[m_CurrentBackBufferIndex]);
     }

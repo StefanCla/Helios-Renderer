@@ -33,14 +33,17 @@ public:
 	// Check if tearing is supported
 	void CheckTearingSupport();
 
+	// Register the window to the OS
 	void Application::RegisterWindowClass(HINSTANCE hInst, const wchar_t* windowClassName);
 
+	// Check if tearing is supported
 	const bool GetTearingSupport() const;
 
-	std::shared_ptr<CommandQueue> m_CommandQueue;
-	std::shared_ptr<Window> m_Window;
+	// Getters
+	const Microsoft::WRL::ComPtr<ID3D12Device2> GetDevice() const { return m_Device; }
 
-	Microsoft::WRL::ComPtr<ID3D12Device2> m_Device = nullptr;
+	std::shared_ptr<CommandQueue> m_CommandQueue = nullptr;
+	std::shared_ptr<Window> m_Window = nullptr;
 
 private:
 	Application(HINSTANCE hInst);
@@ -52,7 +55,7 @@ private:
 private:
 	Microsoft::WRL::ComPtr<ID3D12Debug> m_DebugInterface = nullptr;
 	Microsoft::WRL::ComPtr<IDXGIAdapter4> m_Adapter = nullptr;
-	//Microsoft::WRL::ComPtr<ID3D12Device2> m_Device = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Device2> m_Device = nullptr;
 
 	bool m_bTearingSupported = false;
 

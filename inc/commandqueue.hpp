@@ -40,10 +40,13 @@ public:
 	// Create Command List using device: The commands to be executed
 	void CreateCommandList(Microsoft::WRL::ComPtr<ID3D12CommandAllocator> commandAllocator, D3D12_COMMAND_LIST_TYPE type);
 
+	// Render the image to the window
 	void Render(std::shared_ptr<Window> window, bool bTearingSupported);
 
-	Microsoft::WRL::ComPtr<ID3D12CommandQueue> m_CommandQueue = nullptr;
+	// Getters
+	const Microsoft::WRL::ComPtr<ID3D12CommandQueue> GetDX12CommandQueue() const { return m_CommandQueue; }
 
+public:
 	UINT m_CurrentBackBufferIndex = 0;
 	uint64_t m_FrameFenceValues[g_BufferCount] = {};
 
@@ -54,6 +57,7 @@ private:
 
 	Microsoft::WRL::ComPtr<ID3D12CommandAllocator> m_CommandAllocators[g_BufferCount];
 	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_CommandList = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12CommandQueue> m_CommandQueue = nullptr;
 
 	Microsoft::WRL::ComPtr<ID3D12Device2> m_Device = nullptr;
 

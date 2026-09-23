@@ -20,9 +20,6 @@ public:
 	Window(HINSTANCE hInst, const wchar_t* windowClassName);
 	~Window();
 
-	// Register the window to the OS, so they know a window is present
-	//void RegisterWindowClass(HINSTANCE hInst, const wchar_t* windowClassName);
-
 	// Create the window itself
 	void CreateWindow(const wchar_t* windowClassName, HINSTANCE hInst, const wchar_t* windowTitle, uint32_t width, uint32_t height);
 
@@ -30,6 +27,7 @@ public:
 	void SetFullScreen(bool bFullscreen);
 	void ToggleFullScreen();
 
+	// Set & Get VSync
 	void ToggleVSync();
 	const bool GetVSync() const;
 
@@ -39,24 +37,37 @@ public:
 	// Create Descriptor Heap using device
 	void CreateDescriptorHeap(Microsoft::WRL::ComPtr<ID3D12Device2> device, D3D12_DESCRIPTOR_HEAP_TYPE type);
 
+	// Update the window render target view
 	void UpdateRenderTargetView(Microsoft::WRL::ComPtr<ID3D12Device2> device);
 
+	// Update the window, does not render the image to screen
 	void Update();
+
+	// Show window
 	void ShowWindow();
 
+	// Hide window
+	void HideWindow();
+
 	// Resize the window properly
-	void Resize(uint32_t width, uint32_t height, std::shared_ptr<CommandQueue> commandQueue, Microsoft::WRL::ComPtr<ID3D12Device2> device);
+	void Resize(uint32_t width, uint32_t height, std::shared_ptr<CommandQueue> commandQueue);
 
-	Microsoft::WRL::ComPtr<IDXGISwapChain4> m_SwapChain = nullptr;
-	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_DescriptorHeap = nullptr;
-	Microsoft::WRL::ComPtr<ID3D12Resource> m_Resource[g_BufferCount];
+	// Getters
+	const Microsoft::WRL::ComPtr<IDXGISwapChain4> GetSwapChain() const { return m_SwapChain; }
+	const Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetDescriptorHeap() const { return m_DescriptorHeap; }
+	const Microsoft::WRL::ComPtr<ID3D12Resource> GetResource(const uint32_t backBufferIndex) const;
 
+public:
 	UINT m_DescriptorSize;
 
 protected:
 	friend LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 private:
+
+	Microsoft::WRL::ComPtr<IDXGISwapChain4> m_SwapChain = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_DescriptorHeap = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12Resource> m_Resource[g_BufferCount];
 
 	HWND m_HWnd;
 	RECT m_WindowRect;
